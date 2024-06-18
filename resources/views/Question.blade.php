@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Test System</title>
+    <title>Hệ thống kiểm tra trực tuyến</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -61,119 +61,104 @@
         .question {
             margin-bottom: 20px;
         }
-        .options {
-            margin-bottom: 20px;
+        .question p {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
         }
-        .options input {
-            margin-right: 10px;
+        .question label {
+            display: block;
+            font-size: 16px;
+            margin: 5px 0;
         }
-        .buttons {
+        .nav-buttons {
             display: flex;
             justify-content: space-between;
+            margin-top: 20px;
         }
-        .buttons button {
-            padding: 10px 20px;
+        .nav-buttons button {
             background-color: #0c2e4e;
             color: white;
             border: none;
-            cursor: pointer;
+            padding: 10px 20px;
             font-size: 16px;
+            cursor: pointer;
         }
-        .footer {
-            background-color: #ff7f00;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            font-size: 14px;
-        }
-        .button-container {
-            text-align: center; /* Căn giữa nội dung trong container */
-            padding: 50px;
-            
+        .nav-buttons button:disabled {
+            background-color: #bbb;
+            cursor: not-allowed;
         }
         .submit-button {
-            background-color: #4CAF50; /* Màu nền */
-            border: none; /* Không có viền */
-            color: white; /* Màu chữ */
-            padding: 15px 30px; /* Kích thước nút */
-            text-align: center; /* Canh giữa nội dung */
-            text-decoration: none; /* Không gạch chân */
-            display: inline-block; /* Hiển thị dạng block */
-            font-size: 16px; /* Cỡ chữ */
-            cursor: pointer; /* Con trỏ chuột */
-            border-radius: 10px; /* Bo tròn góc */
-            transition-duration: 0.4s; /* Thời gian chuyển đổi */
+            background-color: #00FF00;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            display: none; /* Ẩn nút nộp bài khi không còn câu hỏi */
         }
-        .submit-button:hover {
-            background-color: #45a049; /* Màu nền khi di chuột qua */
+        /* CSS đoạn này không cần thiết và có thể gây lỗi */
+        #submitBtn {
+            background-color: #00CC00;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>HỆ THỐNG THI TRỰC TUYẾN</h1>
+        <h1>Hệ thống kiểm tra trực tuyến</h1>
         <div class="info">
-            <button>NỘP BÀI</button>
-            <span id="countdown">05:00</span>
-            <span>Nghiêm Tiến Điệp (Đăng xuất)</span>
+            <span>Số câu hỏi: {{ $questions->count() }}</span>
+            <button>Đăng xuất</button>
         </div>
     </div>
-
     <div class="container">
-        <form id="quizForm" action="{{ route('submit.quiz') }}" method="post">
-            @csrf
-            @php $count = 1; @endphp
-            @foreach($questions as $question)
-                <div class="question-section">
-                    <h2>Câu {{ $count }}: {{ $question->content }}</h2>
-                    <div class="options">
-                        <input type="radio" id="option_a_{{ $question->id }}" name="answers[{{ $question->id }}]" value="A">
-                        <label for="option_a_{{ $question->id }}">{{ $question->option_a }}</label>
-                        <br>
-                        <input type="radio" id="option_b_{{ $question->id }}" name="answers[{{ $question->id }}]" value="B">
-                        <label for="option_b_{{ $question->id }}">{{ $question->option_b }}</label>
-                        <br>
-                        <input type="radio" id="option_c_{{ $question->id }}" name="answers[{{ $question->id }}]" value="C">
-                        <label for="option_c_{{ $question->id }}">{{ $question->option_c }}</label>
-                        <br>
-                        <input type="radio" id="option_d_{{ $question->id }}" name="answers[{{ $question->id }}]" value="D">
-                        <label for="option_d_{{ $question->id }}">{{ $question->option_d }}</label>
+        <div class="question-section">
+            <h2>Bài thi trực tuyến</h2>
+            <form action="{{ route('submit') }}" method="POST" id="quizForm">
+                @csrf
+                @foreach($questions as $index => $question)
+                    <div class="question" id="question-{{ $index }}" style="display: {{ $index == 0 ? 'block' : 'none' }};">
+                        <p>{{ $index + 1 }}. {{ $question->content }}</p>
+                        <label>
+                            <input type="radio" name="answers[{{ $question->id }}]" value="A">
+                            {{ $question->option_a }}
+                        </label>
+                        <label>
+                            <input type="radio" name="answers[{{ $question->id }}]" value="B">
+                            {{ $question->option_b }}
+                        </label>
+                        <label>
+                            <input type="radio" name="answers[{{ $question->id }}]" value="C">
+                            {{ $question->option_c }}
+                        </label>
+                        <label>
+                            <input type="radio" name="answers[{{ $question->id }}]" value="D">
+                            {{ $question->option_d }}
+                        </label>
                     </div>
+                @endforeach
+                <div class="nav-buttons">
+                    <button type="button" id="prevBtn" onclick="changeQuestion(-1)" disabled>Trước</button>
+                    <button type="button" id="nextBtn" onclick="changeQuestion(1)">Tiếp theo</button>
+                    <button type="submit" class="submit-button" id="submitBtn">Nộp bài</button>
                 </div>
-                @php $count++; @endphp
-            @endforeach
-            <div class="button-container">
-                <input type="submit" value="Nộp bài" class="submit-button">
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-
-    <div class="footer">
-        HỆ THỐNG THI TRỰC TUYẾN
-    </div>
-
     <script>
-        var now = new Date().getTime();
-        var countdownTime = new Date(now + 5 * 60 * 1000).getTime();
+        let currentQuestion = 0;
+        const totalQuestions = {{ $questions->count() }};
+        
+        function changeQuestion(direction) {
+            const questions = document.querySelectorAll('.question');
+            questions[currentQuestion].style.display = 'none';
+            currentQuestion += direction;
+            questions[currentQuestion].style.display = 'block';
 
-        var x = setInterval(function() {
-            var now = new Date().getTime();
-            var distance = countdownTime - now;
-
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            document.getElementById("countdown").innerHTML = ("0" + minutes).slice(-2) + ":" + ("0" + seconds).slice(-2);
-
-            if (distance < 0) {
-                clearInterval(x);
-                document.getElementById("countdown").innerHTML = "Hết thời gian";
-                document.getElementById("quizForm").submit();
-            }
-        }, 1000);
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').style.display = currentQuestion === totalQuestions - 1 ? 'none' : 'inline-block';
+            document.getElementById('submitBtn').style.display = currentQuestion === totalQuestions - 1 ? 'inline-block' : 'none';
+        }
     </script>
 </body>
 </html>

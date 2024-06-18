@@ -13,10 +13,11 @@ class QuestionController extends Controller
         $this->questionRepository = $questionRepository;
     }
 
-    public function showTest()
+    public function showTestPage(Request $request)
     {
-        $questions = $this->questionRepository->getQuestions(10);
-        return view('Question', ['questions' => $questions]);
-    }
+        $numQuestions = $request->get('questions', 10); // Mặc định là 10 câu hỏi
+        $questions = $this->questionRepository->getQuestionsByNumQuestions($numQuestions);
 
+        return view('Question', compact('questions'));
+    }
 }

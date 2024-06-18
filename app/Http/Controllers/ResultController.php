@@ -3,75 +3,33 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Repositories\QuestionRepositoryInterface;
-use App\Models\Result;
+use App\Services\ResultService;
+use Illuminate\Support\Facades\Auth;
 
 class ResultController extends Controller
 {
-    protected $resultRepository;
+    protected $resultService;
 
-    public function __construct(QuestionRepositoryInterface $resultRepository)
+    public function __construct(ResultService $resultService)
     {
-        $this->resultRepository = $resultRepository;
+        $this->resultService = $resultService;
     }
 
-    public function submitQuiz(Request $request)
+    public function showResult(Request $request)
     {
-        $answers = $request->input('answers');
-        $correctAnswers = $this->calculateCorrectAnswers($answers);
+        $userId = Auth::id();
+        $answers = $request->input('answers'); // Giả sử bạn nhận được câu trả lời từ request
 
-        $totalQuestions = count($answers);
-        $result = [
-            'correct' => $correctAnswers,
-            'total' => $totalQuestions,
-            'percentage' => ($correctAnswers / $totalQuestions) * 100,
-            'course' => $this->determineCourse($correctAnswers)
-        ];
-
-        // Lưu kết quả vào cơ sở dữ liệu
-        $this->saveResultToDatabase($correctAnswers);
-
-        // Trả về view 'result' với dữ liệu kết quả
-        return view('result', compact('result'));
+        $this->resultService->saveAnswersToDatabase($answers);
+     
+        $result = $this->resultService->calculateResult($userId);
+        return view('result', ['result' => $result]);
     }
-
-    protected function calculateCorrectAnswers($answers)
-    {
-        $correctAnswers = 0;
-
-        foreach ($answers as $questionId => $userAnswer) {
-            $question = $this->resultRepository->findQuestionById($questionId);
-            if ($question && $question->correct_answer == $userAnswer) {
-                $correctAnswers++;
-            }
-        }
-
-        return $correctAnswers;
-    }
-
-    protected function determineCourse($correctAnswers)
-    {
-        if ($correctAnswers >= 1 && $correctAnswers <= 4) {
-            return 'Beginner';
-        } elseif ($correctAnswers > 4 && $correctAnswers <= 7) {
-            return 'Intermediate';
-        } elseif ($correctAnswers > 7) {
-            return 'Advanced';
-        } else {
-            return 'No course recommended';
-        }
-    }
-
-    protected function saveResultToDatabase($correctAnswers)
-    {
-        // Giả sử user_id được lưu trong session (auth()->id() hoặc logic tương tự)
-        $userId = 4; // Thay thế bằng cách lấy user ID động
-        // Thay thế bằng logic lấy ID của bài kiểm tra thực tế
-
-        $result = new Result();
-        $result->user_id = $userId;
-        
-        $result->score = $correctAnswers;
-        $result->save();
+    public function calculateResult() {
+        $userId = Auth::id();
+        $result = $this->resultService->calculateResult($userId);
+        // Xử lý kết quả, ví dụ hiển thị lên view
+     
+        return view('result', ['result' => $result]);
     }
 }
