@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Repositories\CourseRepositoryInterface;
 
 class AdminController extends Controller
 {
-    public function index()
-    {
-        return view('dashboard');
-    }
+    
 
     public function updateQuestions(Request $request)
     {
@@ -29,4 +27,18 @@ class AdminController extends Controller
     {
         return view ('course');
     }
+    protected $courseRepository;
+
+    public function __construct(CourseRepositoryInterface $courseRepository)
+    {
+        $this->courseRepository = $courseRepository;
+    }
+
+    public function index()
+    {  
+        $courses = $this->courseRepository->all();
+        return view('admin_course', compact('courses'));
+    }
+
+   
 }

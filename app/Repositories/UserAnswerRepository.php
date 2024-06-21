@@ -43,10 +43,32 @@ class UserAnswerRepository implements UserAnswerRepositoryInterface
     public function getCurrentUserCorrectAnswersCount(): int
     {
         $userId = Auth::id();
+
         return DB::table('user_answers')
                  ->join('questions', 'user_answers.question_id', '=', 'questions.id')
                  ->where('user_answers.user_id', $userId)
                  ->whereColumn('user_answers.user_answer', 'questions.correct_answer')
                  ->count();
+    }
+
+    public function getUserTests($userId)
+    {
+        return UserAnswer::where('user_id', $userId)
+            ->with('test') // Giả sử bạn có quan hệ 'test' được định nghĩa trong model UserAnswer
+            ->get();
+    }
+    public function getTestsByUserId($userId)
+    {
+        $testIds = UserAnswer::where('user_id', $userId)->distinct()->pluck('test_id');
+       // dd($testIds); // Kiểm tra kết quả trả về
+        return $testIds;
+        }
+
+    public function getUserAnswersByTestId($userId, $testId)
+    {
+        return UserAnswer::where('user_id', $userId)
+                         ->where('test_id', $testId)
+                         ->pluck('user_answer', 'question_id')
+                         ->toArray();
     }
 }

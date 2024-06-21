@@ -6,17 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
 {
-    protected $fillable = [
-        'user_id', 'content', 'option_a', 'option_b', 'option_c', 'option_d', 'correct_answer',
-    ];
+    protected $fillable = ['content', 'option_a', 'option_b', 'option_c', 'option_d', 'correct_answer'];
 
-    public function user()
+    public function tests()
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function userAnswers()
-    {
-        return $this->hasMany(UserAnswer::class);
+        return $this->belongsToMany(Test::class, 'test_questions', 'question_id', 'test_id');
     }
 }

@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Test extends Model
 {
-    protected $fillable = ['user_id']; // Để cho phép gán user_id khi tạo bài kiểm tra
+    protected $fillable = ['user_id'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function questions()
     {
-        return $this->belongsToMany(Question::class, 'test_question')
-                    ->withPivot('id')
-                    ->withTimestamps();
+        return $this->belongsToMany(Question::class, 'test_questions', 'test_id', 'question_id');
     }
 }

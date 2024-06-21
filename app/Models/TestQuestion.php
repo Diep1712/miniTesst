@@ -6,11 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class TestQuestion extends Model
 {
-    protected $table = 'test_questions'; // Sửa tên bảng thành 'test_question'
+    protected $table = 'test_questions';
+    protected $fillable = ['test_id', 'question_id'];
 
-    protected $fillable = [
-        'test_id', 'question_id',
-    ];
+    public function test()
+    {
+        return $this->belongsTo(Test::class);
+    }
 
-    // Các phương thức khác của model
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
 }

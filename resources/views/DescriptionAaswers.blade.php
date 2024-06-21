@@ -88,7 +88,7 @@
     <div class="header">
         <h1>Hệ thống kiểm tra trực tuyến</h1>
         <div class="info">
-            <span>Số câu hỏi: </span>
+            <span>Số câu hỏi: {{ $questions->count() }}</span>
             <button onclick="window.location.href='{{ route('logout') }}'">Đăng xuất</button>
         </div>
     </div>

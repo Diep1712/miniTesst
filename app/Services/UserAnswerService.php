@@ -12,9 +12,10 @@ class UserAnswerService
     {
         $this->userAnswerRepository = $userAnswerRepository;
     }
-
     public function getCurrentUserCorrectAnswersCount(): int
     {
         return $this->userAnswerRepository->getCurrentUserCorrectAnswersCount();
     }
+    
+
 }

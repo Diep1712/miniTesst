@@ -18,13 +18,18 @@ class QuestionRepository implements QuestionRepositoryInterface
         return Question::find($id);
     }
     
-    public function getQuestionsByUserId($userId)
-    {
-        return Question::join('user_answers', 'questions.id', '=', 'user_answers.question_id')
-                        ->where('user_answers.user_id', $userId)
-                        ->select('questions.*')
-                        ->get();
-    } public function getUserAnswersByUserId($userId)
+    public function getQuestionsByUserId($userId, $testId)
+{
+    $questions = Question::join('user_answers', 'questions.id', '=', 'user_answers.question_id')
+                    ->where('user_answers.user_id', $userId)
+                    ->where('user_answers.test_id', $testId)
+                    ->select('questions.*')
+                    ->get();
+                  
+//dd($questions);
+    return $questions;
+}
+public function getUserAnswersByUserId($userId)
     {
         return UserAnswer::where('user_id', $userId)->get();
     }

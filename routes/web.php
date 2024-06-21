@@ -54,15 +54,26 @@ Route::get('/test-page', [QuestionController::class, 'showTestPage'])->name('tes
 
 Route::get('/show-course/{course}', [UserAnswerController::class, 'showCourse'])->name('show-course');
 Route::get('/courses/{course}', [UserAnswerController::class, 'show'])->name('show-course');
+
 Route::get('viewanswers}', [ViewAnswersController::class, 'reviewAnswers'])->name('view-answers');
 
 Route::post('/admin/update-questions', [AdminController::class, 'updateQuestions'])->name('admin.updateQuestions');
-//Route::get('/showcourse', [AdminController::class, 'showcourse'])->name('showcourse');
+
 Route::get('/review-answers/{testId}', [ViewAnswersController::class, 'reviewAnswers'])->name('review.answers');
 
 Route::post('/view-result', [ResultController::class, 'showResult'])->name('submit');
 
+Route::get('/user/current/correct-answers', [UserAnswerController::class, 'geturrentUserCorrectAnswersCount'])->name('showcourse');
+// Route::get('/user/current/correct-answers', [ResultController::class, 'getCurrentUserCorrectAnswersCount'])->name('showcourse');
+Route::get('/admin_course',[AdminController::class,'index']);
+Route::post('/users', [UserAnswerController::class, 'getUserTests'])->name('input.process');
+Route::get('/users', [UserAnswerController::class, 'getUserTests'])->name('input.process');
 
-Route::get('/user/current/correct-answers', [UserAnswerController::class, 'getCurrentUserCorrectAnswersCount'])->name('showcourse');
 
+Route::get('/user/{userId}/tests/{testId}/review', [UserAnswerController::class, 'reviewTest'])->name('user.tests.review');
+
+Route::get('/editPoint', [UserAnswerController::class, 'EditPoint']);
+Route::post('/editPoint', [UserAnswerController::class, 'EditPoint']);
+Route::post('/setCourseLimits', [UserAnswerController::class, 'setCourseLimits'])->name('set.course');
+Route::get('/setCourseLimits', [UserAnswerController::class, 'setCourseLimits'])->name('set.course');
 

@@ -10,4 +10,7 @@ interface UserAnswerRepositoryInterface
     public function getUserAnswersByUserId($userId);
     public function getResultsByTestId($testId);
     public function getCurrentUserCorrectAnswersCount(): int;
+    public function getUserTests($userId);
+    public function getTestsByUserId($userId);
+    public function getUserAnswersByTestId($userId, $testId);
 }
