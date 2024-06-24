@@ -26,40 +26,6 @@ class UserAnswerController extends Controller
         $this->resultService = $resultService;
     }
 
-    // public function getCurrentUserCorrectAnswersCount()
-    // {
-    //     $answers = []; // Khai báo biến $answers để tránh lỗi Undefined variable
-
-    //     // Gọi phương thức để lưu câu trả lời của người dùng và nhận lại testId
-    //     $testId = $this->resultService->saveAnswersToDatabase($answers);
-    //     $count = $this->userAnswerService->getCurrentUserCorrectAnswersCount($testId);
-    //     $course = $this->suggestCourseBasedOnScore($count);
-
-    //     // Trả về view 'course' với các biến count, course, và courseId
-    //     return view('course', [
-    //         'count' => $count,
-    //         'course' => $course,
-    //         'courseId' => $course, // Sử dụng $courseId bằng giá trị $course
-    //     ]);
-    // }
-
-    // public function suggestCourseBasedOnScore($score)
-    // {
-    //     if ($score >= 0 && $score <= 2) {
-    //         return "Beginner (Sơ cấp 1)";
-    //     } elseif ($score >= 3 && $score <= 5) {
-    //         return "High Beginner (Sơ cấp 2)";
-    //     } elseif ($score >= 6 && $score <= 8) {
-    //         return "Low Intermediate (Trung cấp 1)";
-    //     } elseif ($score >= 9 && $score <= 11) {
-    //         return "Intermediate (Trung cấp 2)";
-    //     } elseif ($score >= 12) {
-    //         return "Low Advanced (Cao cấp 1)";
-    //     } else {
-    //         return "Không xác định";
-    //     }
-    // }
-
     public function getUserTests(Request $request)
     {
         $inputValue = $request->input('input_value');
@@ -83,10 +49,7 @@ class UserAnswerController extends Controller
         return view('DescriptionAaswers', compact('questions', 'userAnswers'));
     }
 
-    public function EditPoint()
-    {
-        return view('EditPoint');
-    }
+    
 
     public function setCourseLimits(Request $request)
     {
@@ -95,25 +58,43 @@ class UserAnswerController extends Controller
             'beginner_max' => 'required|integer',
             'intermediate_min' => 'required|integer',
             'intermediate_max' => 'required|integer',
+            'low_intermediate_min' => 'required|integer',
+            'low_intermediate_max' => 'required|integer',
             'advanced_min' => 'required|integer',
+            'advanced_max' => 'required|integer',
         ]);
-
+    
         // Lưu các giới hạn vào session hoặc cơ sở dữ liệu tùy nhu cầu
         session([
             'beginner_min' => $request->beginner_min,
             'beginner_max' => $request->beginner_max,
             'intermediate_min' => $request->intermediate_min,
             'intermediate_max' => $request->intermediate_max,
+            'low_intermediate_min' => $request->low_intermediate_min,
+            'low_intermediate_max' => $request->low_intermediate_max,
             'advanced_min' => $request->advanced_min,
+            'advanced_max' => $request->advanced_max,
         ]);
-
-        return redirect()->route('set.course'); // Điều hướng về trang khóa học
+    
+        return redirect()->route('set.course'); // Điều hướng về trang đặt giới hạn khóa học
     }
-    public function getCurrentUserCorrectAnswersCount()
-    {
-        $count = $this->userAnswerService->getCurrentUserCorrectAnswersCount();
-        $course = $this->suggestCourseBasedOnScore($count); 
+    
 
+    public function getCurrentUserCorrectAnswersCount()
+    {   
+        $userId = Auth::id(); // Lấy ID của người dùng đã đăng nhập
+        $testId = session('test_id');
+
+    // Đảm bảo testId tồn tại
+    if (!$testId) {
+        // Xử lý trường hợp testId không tồn tại (ví dụ: trả về lỗi hoặc thông báo)
+        abort(404, 'Test ID not found in session');
+    }
+
+        $count = $this->userAnswerService->getCurrentUserCorrectAnswersCount($userId , $testId);
+      //  dd($count);
+        $course = $this->suggestCourseBasedOnScore($count); 
+//dd($course);
         // Trả về view 'course' với các biến count, course, và courseId
         return view('course', [
             'count' => $count,
@@ -123,19 +104,35 @@ class UserAnswerController extends Controller
     }
 
     public function suggestCourseBasedOnScore($score)
+{
+    // Lấy các giá trị tùy chỉnh từ session
+    $beginner_min = session('beginner_min', 1);
+    $beginner_max = session('beginner_max', 2);
+    $intermediate_min = session('intermediate_min', 3);
+    $intermediate_max = session('intermediate_max', 5);
+    $low_intermediate_min = session('low_intermediate_min', 6);
+    $low_intermediate_max = session('low_intermediate_max', 8);
+    $advanced_min = session('advanced_min', 9);
+    $advanced_max = session('advanced_max', 11);
+
+    if ($score >= $beginner_min && $score <= $beginner_max) {
+        return "Beginner (Sơ cấp 1)";
+    } elseif ($score >= $intermediate_min && $score <= $intermediate_max) {
+        return "High Beginner (Sơ cấp 2)";
+    } elseif ($score >= $intermediate_max + 1 && $score <= $low_intermediate_min - 1) {
+        return "Low Intermediate (Trung cấp 1)";
+    } elseif ($score >= $low_intermediate_min && $score <= $low_intermediate_max) {
+        return "Intermediate (Trung cấp 2)";
+    } elseif ($score >= $low_intermediate_max + 1 && $score <= $advanced_min - 1) {
+        return "Low Advanced (Cao cấp 1)";
+    } elseif ($score >= $advanced_min && $score <= $advanced_max) {
+        return "Advanced (Cao cấp 2)";
+    } else {
+        return "Không xác định";
+    }
+}
+    public function show($course)
     {
-        if ($score >= 0 && $score <= 2) {
-            return "Beginner (Sơ cấp 1)";
-        } elseif ($score >= 3 && $score <= 5) {
-            return "High Beginner (Sơ cấp 2)";
-        } elseif ($score >= 6 && $score <= 8) {
-            return "Low Intermediate (Trung cấp 1)";
-        } elseif ($score >= 9 && $score <= 11) {
-            return "Intermediate (Trung cấp 2)";
-        } elseif ($score >= 12) {
-            return "Low Advanced (Cao cấp 1)";
-        } else {
-            return "Không xác định";
-        }
+        return view('show', compact('course'));
     }
 }

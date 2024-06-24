@@ -74,6 +74,13 @@
                     <button class="close" onclick="window.location.href='{{ route('showcourse') }}'">KHOÁ HỌC PHÙ HỢP VỚI BẠN </button>
                 </div>
             </div>
-
+            <script>
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Trang được truy cập từ cache
+                window.location.reload();
+            }
+        });
+    </script>
             </body>
             </html>

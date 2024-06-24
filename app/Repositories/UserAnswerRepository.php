@@ -40,16 +40,19 @@ class UserAnswerRepository implements UserAnswerRepositoryInterface
         return UserAnswer::where('test_id', $testId)
             ->count();
     }
-    public function getCurrentUserCorrectAnswersCount(): int
-    {
-        $userId = Auth::id();
+    public function getCurrentUserCorrectAnswersCount($userId, $testId)
+{
+ 
+    $qs = DB::table('user_answers')
+             ->join('questions', 'user_answers.question_id', '=', 'questions.id')
+             ->where('user_answers.user_id', $userId)
+             ->where('user_answers.test_id', $testId) // Thêm điều kiện lọc theo test_id
+             ->whereColumn('user_answers.user_answer', 'questions.correct_answer')
+             ->count();
+          //   dd($qs);
+             return  $qs;
+}
 
-        return DB::table('user_answers')
-                 ->join('questions', 'user_answers.question_id', '=', 'questions.id')
-                 ->where('user_answers.user_id', $userId)
-                 ->whereColumn('user_answers.user_answer', 'questions.correct_answer')
-                 ->count();
-    }
 
     public function getUserTests($userId)
     {
@@ -66,9 +69,10 @@ class UserAnswerRepository implements UserAnswerRepositoryInterface
 
     public function getUserAnswersByTestId($userId, $testId)
     {
-        return UserAnswer::where('user_id', $userId)
+       $total= UserAnswer::where('user_id', $userId)
                          ->where('test_id', $testId)
                          ->pluck('user_answer', 'question_id')
                          ->toArray();
+                         return $total ; 
     }
 }

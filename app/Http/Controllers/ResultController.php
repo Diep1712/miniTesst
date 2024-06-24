@@ -26,41 +26,13 @@ class ResultController extends Controller
 
         $this->resultService->saveAnswersToDatabase($answers);
      
-        $result = $this->resultService->calculateResult($userId);
-        return view('result', ['result' => $result]);
+        // $result = $this->resultService->calculateResult($userId);
+        return view('result');
     }
-    public function getCurrentUserCorrectAnswersCount()
-    {
-    // Khai báo biến $answers để tránh lỗi Undefined variable
+  
+  public function showResultPage()
+  { 
+    return view('result');
 
-        // Gọi phương thức để lưu câu trả lời của người dùng và nhận lại testId
-        
-        $count = $this->userAnswerService->getCurrentUserCorrectAnswersCount();
-        $course = $this->suggestCourseBasedOnScore($count);
-
-        // Trả về view 'course' với các biến count, course, và courseId
-        return view('course', [
-            'count' => $count,
-            'course' => $course,
-            'courseId' => $course, // Sử dụng $courseId bằng giá trị $course
-        ]);
-    }
-
-    public function suggestCourseBasedOnScore($score)
-    {
-        if ($score >= 0 && $score <= 2) {
-            return "Beginner (Sơ cấp 1)";
-        } elseif ($score >= 3 && $score <= 5) {
-            return "High Beginner (Sơ cấp 2)";
-        } elseif ($score >= 6 && $score <= 8) {
-            return "Low Intermediate (Trung cấp 1)";
-        } elseif ($score >= 9 && $score <= 11) {
-            return "Intermediate (Trung cấp 2)";
-        } elseif ($score >= 12) {
-            return "Low Advanced (Cao cấp 1)";
-        } else {
-            return "Không xác định";
-        }
-    }
-
+  }
 }

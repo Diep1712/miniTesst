@@ -32,6 +32,7 @@ class ViewAnswersController extends Controller
     $testId = $this->resultService->saveAnswersToDatabase($answers);
     $testId=$testId-1;
 //dd($testId);
+    session(['test_id' => $testId]);    
     // Lấy danh sách câu hỏi mà người dùng đã trả lời trong bài kiểm tra có test_id
     $questions = $this->questionRepository->getQuestionsByUserId($userId, $testId);
 

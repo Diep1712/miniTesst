@@ -49,44 +49,44 @@ class ResultService
     return $testId; // Trả về test_id để có thể sử dụng trong phương thức khác
 }
 
-    public function calculateResult($userId) {
-        // Lấy các câu trả lời của người dùng từ bảng user_answers
-        $userAnswers = $this->userAnswerRepository->getResultsByTestId($userId);
+    // public function calculateResult($userId) {
+    //     // Lấy các câu trả lời của người dùng từ bảng user_answers
+    //     $userAnswers = $this->userAnswerRepository->getResultsByTestId($userId);
 
-        $correctAnswers = 0;
-        $totalQuestions = count($userAnswers); // Tổng số câu hỏi trong bài kiểm tra
+    //     $correctAnswers = 0;
+    //     $totalQuestions = count($userAnswers); // Tổng số câu hỏi trong bài kiểm tra
 
-        foreach ($userAnswers as $userAnswer) {
-            // Lấy đáp án đúng từ bảng questions dựa trên question_id
-            $question = $this->questionRepository->getQuestionById($userAnswer->question_id);
+    //     foreach ($userAnswers as $userAnswer) {
+    //         // Lấy đáp án đúng từ bảng questions dựa trên question_id
+    //         $question = $this->questionRepository->getQuestionById($userAnswer->question_id);
 
-            if ($question && $userAnswer->user_answer === $question->correct_answer) {
-                $correctAnswers++;
-            }
-        }
+    //         if ($question && $userAnswer->user_answer === $question->correct_answer) {
+    //             $correctAnswers++;
+    //         }
+    //     }
 
-        $course = $this->determineCourse($correctAnswers);
+    //     $course = $this->determineCourse($correctAnswers);
 
-        return [
-            'correct' => $correctAnswers,
-            'total_score' => $totalQuestions,
-            'percentage' => ($totalQuestions > 0) ? ($correctAnswers / $totalQuestions) * 100 : 0,
-            'course' => $course,
-        ];
+    //     return [
+    //         'correct' => $correctAnswers,
+    //         'total_score' => $totalQuestions,
+    //         'percentage' => ($totalQuestions > 0) ? ($correctAnswers / $totalQuestions) * 100 : 0,
+    //         'course' => $course,
+    //     ];
 
 
-    }    protected function determineCourse($correctAnswers)
-    {
-        if ($correctAnswers >= 1 && $correctAnswers <= 4) {
-            return 'Beginner';
-        } elseif ($correctAnswers > 2 && $correctAnswers <= 7) {
-            return 'Intermediate';
-        } elseif ($correctAnswers > 7) {
-            return 'Advanced';
-        } else {
-            return 'No course recommended';
-        }
-    }
+    // }    protected function determineCourse($correctAnswers)
+    // {
+    //     if ($correctAnswers >= 1 && $correctAnswers <= 4) {
+    //         return 'Beginner';
+    //     } elseif ($correctAnswers > 2 && $correctAnswers <= 7) {
+    //         return 'Intermediate';
+    //     } elseif ($correctAnswers > 7) {
+    //         return 'Advanced';
+    //     } else {
+    //         return 'No course recommended';
+    //     }
+    // }
 
 
    

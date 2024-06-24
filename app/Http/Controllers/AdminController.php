@@ -23,10 +23,7 @@ class AdminController extends Controller
         return redirect()->back()->with('status', 'Cập nhật số lượng câu hỏi thành công!');
     }
 
-    public function showcourse ()
-    {
-        return view ('course');
-    }
+   
     protected $courseRepository;
 
     public function __construct(CourseRepositoryInterface $courseRepository)
@@ -34,10 +31,19 @@ class AdminController extends Controller
         $this->courseRepository = $courseRepository;
     }
 
-    public function index()
+    public function adminmanageresults()
     {  
         $courses = $this->courseRepository->all();
         return view('admin_course', compact('courses'));
+    }
+    public function adminManageCourses()
+    {  
+        return view ('EditPoint');
+    }
+   
+    public function admin()
+    {
+        return view ('admin');
     }
 
    
